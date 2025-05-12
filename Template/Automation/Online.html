@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automation Dashboard</title>
+    <style>
+        /* Base styles */
+        body {
+            margin: 0;
+            font-family: sans-serif;
+            display: flex;
+            background-color: #f0f0f0;
+            min-height: 100vh;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: 150px;
+            background-color: #23245d;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 15px;
+            padding-left: 0;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+
+        .dropdown-label {
+            color: white;
+            font-size: 12px;
+            margin-bottom: 8px;
+            text-align: center;
+            width: 80%;
+        }
+
+        .dropdown {
+            margin-bottom: 15px;
+            width: 80%;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .toggle-button {
+            margin: 8px 0;
+            padding: 8px 12px;
+            border: 1px solid white;
+            border-radius: 5px;
+            background-color: #37387a;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            width: 80%;
+            text-align: center;
+        }
+
+        .toggle-button:hover {
+            background-color: #5a5c99;
+            border-color: #ddd;
+        }
+
+        .icon-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 60px;
+        }
+
+        .icon {
+            width: 60px;
+            height: 60px;
+            transition: transform 0.2s ease;
+            filter: brightness(0) invert(1);
+        }
+
+        .icon:hover {
+            transform: scale(1.1);
+        }
+
+        /* Content Area styles */
+        .content-area {
+            flex-grow: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        .top-row,
+        .bottom-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .section {
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #fff;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 280px;
+            box-sizing: border-box;
+        }
+
+        /* Connect Tester Section */
+        #connectTesterSection h3 {
+            margin-top: 0;
+            font-size: 16px;
+            color: #333;
+            text-align: left;
+            margin-bottom: 10px;
+        }
+
+        .ip-input-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            gap: 5px;
+        }
+
+        .ip-input {
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            flex-grow: 1;
+            font-size: 12px;
+        }
+
+        .connect-button {
+            background-color: #23245d;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.3s ease;
+        }
+
+        .connect-button:hover {
+            background-color: #37387a;
+        }
+
+        #connectTesterSection .status,
+        #connectTesterSection .board-no,
+        #connectTesterSection .sw-version,
+        #connectTesterSection .fw-version {
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 3px;
+        }
+
+        .status-unreachable {
+            color: #d9534f;
+            font-weight: bold;
+        }
+
+        /* Prepare Tests For Run */
+        .prepare-for-run {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .prepare-for-run h3 {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .checkbox-group h4 {
+            margin: 0;
+            font-size: 1em;
+            color: #555;
+        }
+
+        .checkbox-group label {
+            font-size: 12px;
+            color: #555;
+        }
+
+        /* Test Execution Preparation */
+        #testExecutionPreparationSection h3 {
+            margin-top: 0;
+            font-size: 16px;
+            color: #333;
+            text-align: left;
+            margin-bottom: 10px;
+        }
+
+        #testExecutionPreparationSection button {
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            width: 100%;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            text-align: left;
+            font-size: 12px;
+            transition: background-color 0.3s ease;
+        }
+
+        #testExecutionPreparationSection button:hover {
+            background-color: #e0e0e0;
+        }
+
+        #testExecutionPreparationSection div {
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        #testExecutionPreparationSection input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+        /* View Test */
+        #viewTestSection h3 {
+            margin-top: 0;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        #viewTestSection .select-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        #viewTestSection .select-group label {
+            font-size: 12px;
+            color: #555;
+            width: 100px;
+        }
+
+        #viewTestSection .select-group select {
+            flex-grow: 1;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        #viewTestSection .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        #viewTestSection .button-group button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            background-color: #f0f0f0;
+            color: #333;
+            transition: background-color 0.3s ease;
+        }
+
+        #viewTestSection .button-group button:hover {
+            background-color: #e0e0e0;
+        }
+
+        /* Run Test */
+        #runTestSection h3 {
+            margin-top: 0;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        #runTestSection .run-controls,
+        #runTestSection .run-options {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        #runTestSection .run-controls label,
+        #runTestSection .run-options label {
+            font-size: 12px;
+            color: #555;
+        }
+
+        #runTestSection .run-controls input[type="text"],
+        #runTestSection .run-controls input[type="number"],
+        #runTestSection .run-options select {
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        #runTestSection .run-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        #runTestSection .run-buttons button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+
+        #runTestSection .run-buttons button:nth-child(1) {
+            background-color: #28a745;
+        }
+
+        #runTestSection .run-buttons button:nth-child(1):hover {
+            background-color: #218838;
+        }
+
+        #runTestSection .run-buttons button:nth-child(2) {
+            background-color: #007bff;
+        }
+
+        #runTestSection .run-buttons button:nth-child(2):hover {
+            background-color: #0056b3;
+        }
+
+        #runTestSection .run-buttons button:nth-child(3) { /* Stop Execution */
+            background-color: #dc3545; /* Red */
+        }
+        #runTestSection .run-buttons button:nth-child(3):hover {
+            background-color: #c82333;
+        }
+        #runTestSection .run-buttons button:nth-child(4) { /* Reset */
+            background-color: #6c757d; /* Grey */
+        }
+        #runTestSection .run-buttons button:nth-child(4):hover {
+            background-color: #5a6268;
+        }
+        /* Styles for the Execution Status section */
+        #executionStatusSection h3 {
+            margin-top: 0;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 5px; /* Reduced margin-bottom to move closer to textarea */
+            text-align: left; /* Ensure text is left-aligned */
+        }
+        #executionStatusSection .execution-log {
+            width: 98%; /* Set width to 98% */
+            height: 160px; 
+            resize: none; /* Disable resizing */
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-family: monospace;
+            white-space: pre-wrap; /* Preserve line breaks */
+            font-size: 12px;
+            background-color: #eee; /* Light grey background for log */
+            box-sizing: border-box; /* Include padding and border in dimensions */
+        }
+
+        /* General button styles (can be reused or overridden) */
+        button {
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        /* Scrollbar styling (optional for better UX) */
+        .content-area::-webkit-scrollbar {
+            width: 8px;
+        }
+        .content-area::-webkit-scrollbar-track {
+            background: #f0f0f0;
+        }
+        .content-area::-webkit-scrollbar-thumb {
+            background-color: #bbb;
+            border-radius: 4px;
+        }
+        .content-area::-webkit-scrollbar-thumb:hover {
+            background-color: #999;
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 768px) {
+            .top-row,
+            .bottom-row {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .dropdown,
+            .toggle-button {
+                width: 90%;
+            }
+            .icon-container {
+                width: auto;
+                margin-bottom: 10px;
+            }
+            .icon {
+                width: 40px;
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+
+<body>  
+    {% load static %}
+    <div class="sidebar">
+        <div class="dropdown-label">Product:</div>
+        <select class="dropdown">
+            <option>MPP</option>
+            <option>C3</option>
+            <option>C2-EPR</option>
+        </select>
+
+        <button class="toggle-button" id="productButton">TPR</button>
+        <button class="toggle-button" id="onlineButton">Online</button>
+
+        <div class="icon-container">
+            <img src="{% static 'Images/runbtn.png' %}" class="icon" alt="Play" title="Run Process" id="runButton">
+        </div>
+
+        <div class="icon-container">
+            <img src="{% static 'Images/posbtn.png' %}" class="icon" alt="Robot" title="Positioning">
+        </div>
+
+        <div class="icon-container">
+            <img src="{% static 'Images/rpbtn.png' %}" class="icon" alt="Document" title="Reports">
+        </div>
+
+        <div class="icon-container">
+            <img src="{% static 'Images/stbtn.png' %}" class="icon" alt="Settings" title="Configuration">
+        </div>
+
+        <div class="icon-container">
+            <img src="{% static 'Images/import.png' %}" class="icon" alt="Download" title="Import Data">
+        </div>
+
+        <div class="icon-container">
+            <img src="{% static 'Images/export.png' %}" class="icon" alt="Upload" title="Export Data">
+        </div>
+
+        <div class="icon-container">
+            <img src="{% static 'Images/refresh.png' %}" class="icon" alt="Refresh" title="Reload">
+        </div>
+    </div>
+
+    <div class="content-area">
+        <div class="top-row">
+            <div class="section" id="connectTesterSection">
+                <h3>Connect Tester</h3>
+                <div class="ip-input-container">
+                    <input type="text" value="192.168.5.23" pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$" class="ip-input">
+                    <button class="connect-button">Connect</button>
+                </div>
+                <div class="status status-unreachable">Status :IP address "192.168.255.1" unreachable</div>
+                <div class="board-no">BoardNo :NA</div>
+                <div class="sw-version">SWVersion :3.220.1.28 - 25W-Beta</div>
+                <div class="fw-version">FWversion :NA</div>
+
+                <div class="prepare-for-run">
+                     <h3>Prepare Tests For Run</h3>
+                     <div class="checkbox-group">
+                          <h4>Positions:</h4>
+                          <label><input type="checkbox" checked> All Positions</label>
+                          <label><input type="checkbox"> All Coils</label>
+                     </div>
+                      <div class="checkbox-group">
+                           <h4>Category:</h4>
+                           <label><input type="checkbox" checked> All Categories</label>
+                      </div>
+                       <div class="checkbox-group">
+                           <h4>Phases:</h4>
+                           <label><input type="checkbox" checked> All Phases</label>
+                       </div>
+                </div>
+            </div>
+
+            <div class="section" id="testExecutionPreparationSection">
+                <h3>Test Execution Preparations</h3>
+                <button>Upload ESDF JSON</button>
+                <button>Create Project</button>
+                <button>Upload Tester Config. JSON</button>
+                <button>Load Optimum Data</button>
+                <div>
+                    <input type="checkbox" id="autoValidation" checked>
+                    <label for="autoValidation">Auto Validation</label>
+                </div>
+            </div>
+
+            <div class="section" id="viewTestSection">
+                <h3>View Test</h3>
+                <div class="select-group">
+                    <label for="selectCoil">Select Coil :</label>
+                    <select id="selectCoil">
+                        <option value="">--Select--</option>
+                         </select>
+                </div>
+                 <div class="select-group">
+                    <label for="selectPosition">Select Position :</label>
+                    <select id="selectPosition">
+                        <option value="">--Select--</option>
+                         </select>
+                </div>
+                 <div class="select-group">
+                    <label for="selectPhase">Select Phase :</label>
+                    <select id="selectPhase">
+                         <option value="">--Select--</option>
+                         </select>
+                </div>
+                <div class="button-group">
+                     <button>Keep Selected</button>
+                     <button>Remove Selected</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-row">
+            <div class="section" id="runTestSection">
+                <h3>Run Test</h3>
+                <div class="run-controls">
+                     <label for="selectPositionRun">Select Position:</label>
+                     <input type="text" id="selectPositionRun" value="0,0">
+                     <input type="checkbox" id="enablePositionTool">
+                     <label for="enablePositionTool">Enable Position Tool</label>
+                     <label for="repeatCount">Repeat Count:</label>
+                     <input type="number" id="repeatCount" value="0">
+                </div>
+                <div class="run-options">
+                     <input type="checkbox" id="enableTesterAsDUT">
+                     <label for="enableTesterAsDUT">Enable Tester As DUT:</label>
+                     <select>
+                          <option>Automation Tests</option>
+                          </select>
+                </div>
+                <div class="run-buttons">
+                     <button>Start Optimum</button>
+                     <button>Run Tests - API</button>
+                     <button>Skip Test</button>
+                     <button>Force Stop</button>
+                </div>
+            </div>
+
+            <div class="section" id="executionStatusSection">
+                <h3>Execution Status</h3>
+                <textarea readonly class="execution-log">
+                </textarea>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

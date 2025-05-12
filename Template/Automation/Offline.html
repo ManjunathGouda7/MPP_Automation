@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automation Dashboard</title>
+    <style>
+        /* Base styles */
+        body {
+            margin: 0;
+            font-family: sans-serif;
+            display: flex;
+            background-color: #f0f0f0;
+            min-height: 100vh;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: 150px;
+            background-color: #23245d;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 15px;
+            padding-left: 0;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+
+        .dropdown-label {
+            color: white;
+            font-size: 12px;
+            margin-bottom: 8px;
+            text-align: center;
+            width: 80%;
+        }
+
+        .dropdown {
+            margin-bottom: 15px;
+            width: 80%;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .toggle-button {
+            margin: 8px 0;
+            padding: 8px 12px;
+            border: 1px solid white;
+            border-radius: 5px;
+            background-color: #37387a;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            width: 80%;
+            text-align: center;
+        }
+
+        .toggle-button:hover {
+            background-color: #5a5c99;
+            border-color: #ddd;
+        }
+
+        .icon-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+            width: 60px;
+        }
+
+        .icon {
+            width: 60px;
+            height: 60px;
+            transition: transform 0.2s ease;
+            filter: brightness(0) invert(1);
+        }
+
+        .icon:hover {
+            transform: scale(1.1);
+        }
+
+        /* Content Area styles */
+        .content-area {
+            flex-grow: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        .top-row,
+        .bottom-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .section {
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #fff;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-sizing: border-box;
+        }
+
+        #viewTestSection {
+            height: 400px;
+        }
+        /* View Test Section */
+        #viewTestSection h3 {
+            margin-top: 0;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 10px;
+            
+        }
+
+        #viewTestSection .select-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        #viewTestSection .select-group label {
+            font-size: 12px;
+            color: #555;
+            width: 100px;
+        }
+
+        #viewTestSection .select-group select {
+            flex-grow: 1;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        #viewTestSection .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        #viewTestSection .button-group button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            background-color: #23245d;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+
+        #viewTestSection .button-group button:hover {
+            background-color: #37387a;
+        }
+
+        #offlineValidationSection {
+            height: 200px;
+        }
+
+        /* Offline Validation Section */
+        #offlineValidationSection h3 {
+            margin-top: 0;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        #offlineValidationSection .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        #offlineValidationSection .button-group button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            background-color: #23245d;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+
+        #offlineValidationSection .button-group button:hover {
+            background-color: #37387a;
+        }
+
+        #runTestSection {
+            height: 150px;
+        }   
+        /* Run Test Section */
+        #runTestSection h3 {
+            margin-top: 0;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        #runTestSection .run-options {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+
+        #runTestSection .run-options select {
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 12px;
+            flex-grow: 1;
+        }
+
+        #runTestSection .run-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        #runTestSection .run-buttons button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+
+        #runTestSection .run-buttons button:nth-child(1) {
+            background-color: #007bff;
+        }
+
+        #runTestSection .run-buttons button:nth-child(1):hover {
+            background-color: #0056b3;
+        }
+
+        #runTestSection .run-buttons button:nth-child(2) {
+            background-color: #007bff;
+        }
+
+        #runTestSection .run-buttons button:nth-child(2):hover {
+            background-color: #0056b3;
+        }
+
+        #runTestSection .run-buttons button:nth-child(3) {
+            background-color: #dc3545;
+        }
+
+        #runTestSection .run-buttons button:nth-child(3):hover {
+            background-color: #c82333;
+        }
+
+        /* Styles for the Execution Status section */
+        #executionStatusSection h3 {
+            margin-top: 0;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 5px; 
+            text-align: left; 
+        }
+        #executionStatusSection .execution-log {
+            width: 98%; 
+            height: 160px; 
+            resize: none; 
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            font-size: 12px;
+            background-color: #eee; 
+            box-sizing: border-box; 
+        }
+
+        /* Scrollbar styling */
+        .content-area::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .content-area::-webkit-scrollbar-track {
+            background: #f0f0f0;
+        }
+
+        .content-area::-webkit-scrollbar-thumb {
+            background-color: #bbb;
+            border-radius: 4px;
+        }
+
+        .content-area::-webkit-scrollbar-thumb:hover {
+            background-color: #999;
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 768px) {
+            .top-row,
+            .bottom-row {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .dropdown,
+            .toggle-button {
+                width: 90%;
+            }
+            .icon-container {
+                width: auto;
+                margin-bottom: 10px;
+            }
+            .icon {
+                width: 40px;
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    {% load static %}
+    <div class="sidebar">
+        <div class="dropdown-label">Product:</div>
+        <select class="dropdown">
+            <option>MPP</option>
+            <option>C3</option>
+            <option>C2-EPR</option>
+        </select>
+
+        <button class="toggle-button" id="productButton">TPT</button>
+        <button class="toggle-button" id="offlineButton">Offline</button>
+
+        <div class="icon-container">
+            <img src="{% static 'Images/runbtn.png' %}" class="icon" alt="Play" title="Run Process" id="runButton">
+        </div>
+
+        <div class="icon-container">
+            <img src="{% static 'Images/posbtn.png' %}" class="icon" alt="Robot" title="Positioning">
+        </div>
+
+        <div class="icon-container">
+            <img src="{% static 'Images/rpbtn.png' %}" class="icon" alt="Document" title="Reports">
+        </div>
+
+        <div class="icon-container">
+            <img src="{% static 'Images/stbtn.png' %}" class="icon" alt="Settings" title="Configuration">
+        </div>
+
+        <div class="icon-container">
+            <img src="{% static 'Images/import.png' %}" class="icon" alt="Download" title="Import Data">
+        </div>
+
+        <div class="icon-container">
+            <img src="{% static 'Images/export.png' %}" class="icon" alt="Upload" title="Export Data">
+        </div>
+
+        <div class="icon-container">
+            <img src="{% static 'Images/refresh.png' %}" class="icon" alt="Refresh" title="Reload">
+        </div>
+    </div>
+
+    <div class="content-area">
+        <div class="top-row">
+            <div class="section" id="viewTestSection">
+                <h3>View Test</h3>
+                <div class="select-group">
+                    <label for="selectProject">Select Project :</label>
+                    <select id="selectProject">
+                        <option value="">--Select--</option>
+                    </select>
+                </div>
+                <div class="button-group">
+                    <button>Keep Selected</button>
+                    <button>Remove Selected</button>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 20px; flex: 1;">
+                <div class="section" id="offlineValidationSection" style="background-color: #d3d3d3;">
+                    <h3>Offline Validation</h3>
+                    <div class="button-group">
+                        <button>Browse & Add Projects</button>
+                        <button>Remove Selected</button>
+                        <button>Clear All</button>
+                    </div>
+                </div>
+
+                <div class="section" id="runTestSection">
+                    <h3>Run Test</h3>
+                    <div class="run-options">
+                        <input type="checkbox" id="considerAllRuns">
+                        <label for="considerAllRuns">Consider All Runs</label>
+                        <label for="ctsVersion">CTS Version :</label>
+                        <select id="ctsVersion">
+                            <option>CTSChecks_MPP25W_WD5V_3.0.json</option>
+                        </select>
+                    </div>
+                    <div class="run-buttons">
+                        <button>Prepare Validation</button>
+                        <button>Start Validation-API</button>
+                        <button>Force Stop</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-row">
+            <div class="section" id="executionStatusSection">
+                <h3>Execution Status</h3>
+                <textarea readonly class="execution-log">
+                </textarea>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
